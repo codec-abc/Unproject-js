@@ -1,0 +1,29 @@
+    T : matrix(
+    [1.01891388342441, -0.06457849952033297, 158.0881668257753],
+    [-0.08989536102529699, 0.8638824965428266, 293.4184583865695],
+    [4.588908289822861e-05, -9.669872743027966e-05, 1]
+    );
+    /* transfrom matrix for image 20171005_16359.jpg*/
+
+    tl : matrix ([1284, 1192, 1]); /* the top left corner of the tag in pixel in the original image */
+
+    tlUnProjected : T.tl;
+    tlUnProjectedNormalized : tlUnProjected * (1 / determinant(tlUnProjected[3]));
+
+    /* to compute the un-projected point in a image, get the perspective transformation (T) matrix using OpenCV
+    with getPerspectiveTransform. Then, apply this matrix to any point (x,y) to compute a new point such as
+    np = T * [x,y, 1]. Then, normalize this point to get a normalized point : npNormalized = np / np.z.
+    If the current logic is applied to those normalized points instead of the original point we should correct the rotation and
+    the perspective so the tracking is better. 
+    */
+
+    trPanel : matrix([2880,930,1]); /* the top right corner of the image in the final image */
+    Tinvert : invert(T);
+
+    trPanelReprojected : Tinvert.trPanel;
+    trPanelReprojectedNormalized : trPanelReprojected * (1 / determinant(trPanelReprojected[3]));
+
+    /*
+    1284; 1184 to => 2806; 1054; deltaX = 1522; deltaY = -130;; tag size = 335x403
+    1475; 1281 to => 2885; 923;  deltaX = 1410; deltaY = -358;; tag size = 377x377
+    */
